@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Nómina y Caja - SysFerretería</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #525D65;
+            min-height: 100vh;
+            color: #2D3748;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-nav {
+            background-color: #343A40;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            color: #FFFFFF;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .header-logo-svg {
+            height: 38px;
+            width: auto;
+        }
+
+        .header-menu {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-item {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: #F25C05;
+            color: #FFFFFF;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            width: 96%;
+            margin: 20px auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .cash-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 18px 22px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            border-left: 5px solid #F25C05;
+        }
+
+        .metric-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #718096;
+            text-transform: uppercase;
+        }
+
+        .metric-value {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1A202C;
+            margin-top: 6px;
+        }
+
+        .metric-sub {
+            font-size: 11.5px;
+            color: #10B981;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 20px;
+        }
+
+        .panel-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A202C;
+        }
+
+        .btn-action {
+            background: #F25C05;
+            color: #FFFFFF;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-action:hover {
+            background: #D94E04;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .data-table th {
+            background: #F7FAFC;
+            color: #4A5568;
+            font-weight: 700;
+            text-align: left;
+            padding: 11px 12px;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        .data-table td {
+            padding: 11px 12px;
+            border-bottom: 1px solid #E2E8F0;
+            color: #2D3748;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 10px;
+            font-size: 11.5px;
+            font-weight: 700;
+            background: #FFF5EE;
+            color: #F25C05;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #4A5568;
+        }
+
+        .form-input, .form-select {
+            height: 40px;
+            padding: 0 12px;
+            border-radius: 8px;
+            border: 1px solid #CBD5E0;
+            font-size: 13.5px;
+            color: #2D3748;
+            outline: none;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: #F25C05;
+            box-shadow: 0 0 0 3px rgba(242, 92, 5, 0.15);
+        }
+
+        .calc-preview {
+            background: #F7FAFC;
+            border: 1px dashed #CBD5E0;
+            border-radius: 12px;
+            padding: 14px;
+            margin: 10px 0 16px 0;
+        }
+
+        .calc-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .calc-total {
+            font-size: 17px;
+            font-weight: 800;
+            color: #F25C05;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 8px;
+            margin-top: 6px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #FFFFFF;
+            width: 520px;
+            max-width: 95%;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 960px) {
+            .workspace-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-nav">
+        <div class="header-brand">
+            <svg class="header-logo-svg" viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 60 70 C 20 70 15 25 55 25 C 75 25 85 35 90 42 L 72 50 C 68 44 62 39 52 39 C 32 39 34 56 52 56 C 63 56 70 51 76 45 L 88 56 C 79 65 70 70 60 70 Z" fill="#FFFFFF"/>
+                <path d="M 90 25 L 115 60 L 140 25 L 158 25 L 158 70 L 142 70 L 142 42 L 122 70 L 108 70 L 88 42 L 88 70 L 74 70 L 74 25 Z" fill="#FFFFFF"/>
+                <g fill="#F25C05">
+                    <path d="M 180 32 C 160 32 148 44 146 55 L 214 55 C 212 44 200 32 180 32 Z"/>
+                    <path d="M 142 56 L 218 56 C 221 56 223 58 223 60 C 223 62 221 64 218 64 L 142 64 C 139 64 137 62 137 60 C 137 58 139 56 142 56 Z"/>
+                </g>
+            </svg>
+            <span>SYSFERRETERÍA</span>
+        </div>
+
+        <nav class="header-menu">
+            <a href="sysferreter_a_sistema_principal.html" class="nav-item">Inicio / Inventario</a>
+            <a href="ventas.html" class="nav-item">Ventas (POS)</a>
+            <a href="nomina.html" class="nav-item active">Nómina y Caja</a>
+            <a href="perfil de usuario.html" class="nav-item">Perfil / Bitácora</a>
+            <a href="inicio_de_sesi_n_sysferreter_a.html" class="nav-item">Cerrar Sesión</a>
+        </nav>
+    </header>
+
+    <div class="main-container">
+        <div class="cash-summary-grid">
+            <div class="metric-card">
+                <div class="metric-label">Fondo Inicial de Caja</div>
+                <div class="metric-value" id="caja-fondo">$1,500.00</div>
+                <div class="metric-sub">Corte Activo #1</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Ingresos por Ventas (POS)</div>
+                <div class="metric-value" id="caja-ingresos">$0.00</div>
+                <div class="metric-sub"></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Egresos por Pago de Raya</div>
+                <div class="metric-value" id="caja-egresos" style="color: #E53E3E;">$0.00</div>
+                <div class="metric-sub"></div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Efectivo Físico Esperado</div>
+                <div class="metric-value" id="caja-saldo" style="color: #F25C05;">$1,500.00</div>
+                <div class="metric-sub"></div>
+            </div>
+        </div>
+
+        <div class="workspace-grid">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <span class="panel-title">Control de Empleados</span>
+                    <button class="btn-action" onclick="abrirModalEmpleado()">+ Nuevo Empleado</button>
+                </div>
+
+                <div style="overflow-x: auto; margin-bottom: 24px;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Clave</th>
+                                <th>Nombre / CURP</th>
+                                <th>Depto / Ubicación</th>
+                                <th>Nivel / Puesto</th>
+                                <th>Raya Semanal</th>
+                                <th>Esposa / Emergencia</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-empleados"></tbody>
+                    </table>
+                </div>
+
+                <div class="panel-header" style="margin-top: 10px;">
+                    <span class="panel-title">Últimos Pagos descontados de Caja</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Empleado</th>
+                                <th>Días</th>
+                                <th>Descuento</th>
+                                <th>Total Pagado</th>
+                                <th>Observaciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-pagos"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <aside class="panel-card">
+                <div class="panel-header">
+                    <span class="panel-title">Pago Semanal</span>
+                </div>
+
+                <form id="form-raya" onsubmit="procesarPagoRaya(event)">
+                    <div class="form-group">
+                        <label class="form-label">Seleccionar Trabajador:</label>
+                        <select id="select-empleado" class="form-select" required onchange="recalcularRaya()"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Días Trabajados (Semana de 6 días):</label>
+                        <input type="number" id="input-dias" class="form-input" value="6" min="1" max="6" required oninput="recalcularRaya()">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Adelantos o Descuentos ($):</label>
+                        <input type="number" id="input-descuento" class="form-input" value="0" min="0" step="0.50" oninput="recalcularRaya()">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Observaciones:</label>
+                        <input type="text" id="input-obs" class="form-input" placeholder="Ej. Pago de raya semanal completa">
+                    </div>
+
+                    <div class="calc-preview">
+                        <div class="calc-row">
+                            <span>Sueldo Base Semanal (Nivel):</span>
+                            <strong id="prev-base">$0.00</strong>
+                        </div>
+                        <div class="calc-row">
+                            <span>Proporcional por días:</span>
+                            <strong id="prev-prop">$0.00</strong>
+                        </div>
+                        <div class="calc-row calc-total">
+                            <span>Neto a Entregar de Caja:</span>
+                            <span id="prev-neto">$0.00</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-action" style="width: 100%; height: 44px; font-size: 15px;">
+                        Pagar Raya y Descontar de Caja
+                    </button>
+                </form>
+            </aside>
+        </div>
+    </div>
+
+    <div id="modal-empleado" class="modal-overlay">
+        <div class="modal-box">
+            <div class="panel-header">
+                <span class="panel-title">Alta de Empleado (Tabla Empleados)</span>
+                <button onclick="cerrarModalEmpleado()" style="background:none;border:none;font-size:18px;cursor:pointer;">✕</button>
+            </div>
+            <form onsubmit="guardarNuevoEmpleado(event)">
+                <div class="form-group">
+                    <label class="form-label">Nombre Completo</label>
+                    <input type="text" id="emp-nombre" class="form-input" required>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Nivel Salarial (FK Niveles)</label>
+                        <select id="emp-nivel" class="form-select">
+                            <option value="N01">N01 - Encargado ($2,400)</option>
+                            <option value="N02">N02 - Bodeguero ($1,800)</option>
+                            <option value="N03">N03 - Ayudante ($1,500)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Departamento (FK Departamento)</label>
+                        <select id="emp-depto" class="form-select">
+                            <option value="D01">D01 - Mostrador Ventas</option>
+                            <option value="D02">D02 - Almacén General</option>
+                            <option value="D03">D03 - Patio y Materiales</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">CURP (18 caracteres)</label>
+                        <input type="text" id="emp-curp" class="form-input" maxlength="18" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Teléfono de Emergencia</label>
+                        <input type="text" id="emp-tel-emergencia" class="form-input" required>
+                    </div>
+                </div>
+                <div class="grid-2">
+                    <div class="form-group">
+                        <label class="form-label">Nombre de la Esposa (Opcional)</label>
+                        <input type="text" id="emp-esposa" class="form-input">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Teléfono de la Esposa</label>
+                        <input type="text" id="emp-tel-esposa" class="form-input">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dirección del Empleado</label>
+                    <input type="text" id="emp-direccion" class="form-input" required>
+                </div>
+                <button type="submit" class="btn-action" style="width:100%; height:42px; margin-top:8px;">Guardar Empleado en SQL Server</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="app-api.js"></script>
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recuperar Contraseña - SysFerretería</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #525d65;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 sm:p-6 select-none">
+
+    <!-- Tarjeta Principal Naranja de Recuperación -->
+    <main class="w-full max-w-md bg-[#f25c05] rounded-3xl p-6 sm:p-8 shadow-2xl text-white relative overflow-hidden">
+        
+        <!-- Marca / Isotipo Ferretería Cabrera -->
+        <div class="flex flex-col items-center justify-center mb-6 text-center">
+            <div class="flex items-center justify-center mb-2">
+                <svg class="h-16 w-auto drop-shadow" viewBox="0 0 320 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g fill="#FFFFFF">
+                        <path d="M 195,40 C 195,22 210,10 230,10 C 250,10 265,22 265,40 L 272,40 C 275,40 275,45 272,45 L 188,45 C 185,45 185,40 188,40 Z" />
+                        <rect x="225" y="5" width="10" height="12" rx="2" />
+                        <path d="M 235,30 C 235,17 247,8 262,8 C 277,8 289,17 289,30 L 294,30 C 297,30 297,34 294,34 L 228,34 C 225,34 225,30 228,30 Z" opacity="0.8"/>
+                    </g>
+                    <g fill="#374151" stroke="#374151" stroke-width="2">
+                        <path d="M 60,30 C 40,30 25,45 25,60 C 25,75 40,90 60,90 L 110,90 C 115,90 115,80 110,80 L 60,80 C 48,80 37,70 37,60 C 37,50 48,40 60,40 L 110,40 C 115,40 115,30 110,30 Z" />
+                        <path d="M 105,90 L 105,35 L 135,70 L 165,35 L 165,90 L 180,90 L 180,30 L 165,30 L 135,65 L 105,30 L 90,30 L 90,90 Z" />
+                    </g>
+                </svg>
+            </div>
+            <span class="text-xs uppercase font-bold tracking-widest text-orange-100 opacity-90">Ferretería Cabrera</span>
+        </div>
+
+        <!-- PASO 1: Ingreso de Correo o Usuario -->
+        <div id="step-1" class="fade-in space-y-5">
+            <div class="text-center space-y-2">
+                <h1 class="text-2xl font-extrabold tracking-tight text-white">Recuperar Contraseña</h1>
+                <p class="text-xs sm:text-sm text-orange-100 leading-relaxed opacity-95">
+                    Ingresa tu correo electrónico o nombre de usuario registrado en SQL Server para generar tu código de verificación.
+                </p>
+            </div>
+
+            <form onsubmit="handleSendCode(event)" class="space-y-4">
+                <div class="space-y-1.5">
+                    <label for="recoveryInput" class="block text-xs font-semibold text-orange-100 uppercase tracking-wider">
+                        Usuario o correo electrónico
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                            <i class="fa-solid fa-envelope"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            id="recoveryInput" 
+                            required
+                            value="admin_cabrera"
+                            placeholder="ej. admin_cabrera o admin@ferreteriacabrera.com" 
+                            class="w-full pl-10 pr-4 py-3 bg-white text-gray-800 placeholder-gray-400 rounded-xl font-medium text-sm border-2 border-transparent focus:outline-none focus:border-gray-800 transition shadow-inner"
+                        >
+                    </div>
+                </div>
+
+                <button 
+                    type="submit" 
+                    id="btnSendCode"
+                    class="w-full py-3.5 px-4 bg-white text-gray-800 hover:bg-orange-50 font-bold rounded-full text-sm shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center space-x-2"
+                >
+                    <span>Generar Código de Verificación</span>
+                    <i class="fa-solid fa-paper-plane text-xs text-[#f25c05]"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- PASO 2: Verificación de Código y Nueva Contraseña -->
+        <div id="step-2" class="hidden fade-in space-y-5">
+            <div class="text-center space-y-2">
+                <h1 class="text-2xl font-extrabold tracking-tight text-white">Código de Verificación</h1>
+                <p class="text-xs sm:text-sm text-orange-100 leading-relaxed">
+                    Cuenta verificada en SQL Server: <br>
+                    <span id="targetEmailDisplay" class="font-bold underline text-white"></span>
+                </p>
+                <!-- Aviso con el código generado para pruebas locales sin servidor SMTP -->
+                <div class="bg-white/15 border border-white/30 rounded-xl p-2.5 text-xs text-white flex items-center justify-between">
+                    <span>Código de seguridad generado: <strong id="generatedCodeBadge" class="font-mono text-sm tracking-widest bg-white text-[#f25c05] px-2 py-0.5 rounded ml-1">------</strong></span>
+                    <button type="button" onclick="rellenarCodigoAutomatico()" class="underline font-bold hover:text-orange-200 ml-2">Autocompletar</button>
+                </div>
+            </div>
+
+            <form onsubmit="handleResetPassword(event)" class="space-y-4">
+                <!-- Casillas de Código de 6 Dígitos -->
+                <div class="space-y-1.5">
+                    <label class="block text-xs font-semibold text-orange-100 uppercase tracking-wider text-center">
+                        Ingresa el código de 6 dígitos
+                    </label>
+                    <div class="flex justify-between gap-2" id="codeInputsContainer">
+                        <input type="text" maxlength="1" class="code-input w-11 h-12 text-center text-xl font-extrabold bg-white text-gray-800 rounded-xl focus:outline-none focus:border-gray-800 border-2 border-transparent shadow" required>
+                        <input type="text" maxlength="1" class="code-input w-11 h-12 text-center text-xl font-extrabold bg-white text-gray-800 rounded-xl focus:outline-none focus:border-gray-800 border-2 border-transparent shadow" required>
+                        <input type="text" maxlength="1" class="code-input w-11 h-12 text-center text-xl font-extrabold bg-white text-gray-800 rounded-xl focus:outline-none focus:border-gray-800 border-2 border-transparent shadow" required>
+                        <input type="text" maxlength="1" class="code-input w-11 h-12 text-center text-xl font-extrabold bg-white text-gray-800 rounded-xl focus:outline-none focus:border-gray-800 border-2 border-transparent shadow" required>
+                        <input type="text" maxlength="1" class="code-input w-11 h-12 text-center text-xl font-extrabold bg-white text-gray-800 rounded-xl focus:outline-none focus:border-gray-800 border-2 border-transparent shadow" required>
+                        <input type="text" maxlength="1" class="code-input w-11 h-12 text-center text-xl font-extrabold bg-white text-gray-800 rounded-xl focus:outline-none focus:border-gray-800 border-2 border-transparent shadow" required>
+                    </div>
+                </div>
+
+                <!-- Campos de Nueva Contraseña -->
+                <div class="space-y-3 pt-2">
+                    <div class="space-y-1">
+                        <label for="newPassword" class="block text-xs font-semibold text-orange-100 uppercase tracking-wider">Nueva Contraseña</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-lock"></i>
+                            </span>
+                            <input 
+                                type="password" 
+                                id="newPassword" 
+                                required
+                                minlength="4"
+                                placeholder="••••••••" 
+                                class="w-full pl-10 pr-4 py-2.5 bg-white text-gray-800 placeholder-gray-400 rounded-xl font-medium text-sm border-2 border-transparent focus:outline-none focus:border-gray-800 transition"
+                            >
+                        </div>
+                    </div>
+
+                    <div class="space-y-1">
+                        <label for="confirmPassword" class="block text-xs font-semibold text-orange-100 uppercase tracking-wider">Confirmar Contraseña</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </span>
+                            <input 
+                                type="password" 
+                                id="confirmPassword" 
+                                required
+                                minlength="4"
+                                placeholder="••••••••" 
+                                class="w-full pl-10 pr-4 py-2.5 bg-white text-gray-800 placeholder-gray-400 rounded-xl font-medium text-sm border-2 border-transparent focus:outline-none focus:border-gray-800 transition"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <button 
+                    type="submit" 
+                    class="w-full py-3.5 px-4 bg-white text-gray-800 hover:bg-orange-50 font-bold rounded-full text-sm shadow-lg hover:shadow-xl transition transform active:scale-95 flex items-center justify-center space-x-2 mt-2"
+                >
+                    <i class="fa-solid fa-key text-xs text-[#f25c05]"></i>
+                    <span>Actualizar Contraseña en SQL Server</span>
+                </button>
+            </form>
+        </div>
+
+        <!-- Pie de tarjeta: Volver a Inicio de Sesión -->
+        <div class="mt-8 pt-4 border-t border-orange-400/50 text-center">
+            <button 
+                type="button"
+                onclick="goToLogin()" 
+                class="inline-flex items-center space-x-2 text-xs font-semibold text-white hover:text-gray-200 transition bg-orange-600/40 hover:bg-orange-600/70 px-4 py-2 rounded-full border border-orange-300/30"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Volver al Inicio de Sesión</span>
+            </button>
+        </div>
+    </main>
+
+    <!-- Modal Emergente de Éxito / Notificaciones -->
+    <div id="statusModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-gray-800 text-center shadow-2xl space-y-4 transform transition-all">
+            <div id="modalIconContainer" class="w-14 h-14 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center text-2xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <div class="space-y-1">
+                <h3 id="modalTitle" class="text-lg font-extrabold text-gray-900">¡Contraseña Restablecida!</h3>
+                <p id="modalBody" class="text-xs sm:text-sm text-gray-600 leading-relaxed">
+                    Tu contraseña se ha cambiado con éxito. Ya puedes iniciar sesión con tu nueva clave.
+                </p>
+            </div>
+            <button 
+                id="modalPrimaryBtn"
+                onclick="handleModalButton()" 
+                class="w-full py-3 bg-[#f25c05] text-white font-bold text-sm rounded-xl hover:opacity-90 transition shadow-md"
+            >
+                Ir a Iniciar Sesión
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let codigoGeneradoActual = '';
+        let usuarioVerificado = '';
+        let modalRedirectOnClose = false;
+
+        // Paso 1: Verificar que el usuario o correo exista en SQL Server y generar código
+        async function handleSendCode(e) {
+            e.preventDefault();
+            const inputVal = document.getElementById('recoveryInput').value.trim();
+            if (!inputVal) return;
+
+            try {
+                const res = await fetch(`${API_URL}/recuperar/verificar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ identificador: inputVal })
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.ok) {
+                    showNotification('Usuario no encontrado', data.mensaje || 'No existe ninguna cuenta asociada a ese usuario o correo en SQL Server.', false);
+                    return;
+                }
+
+                usuarioVerificado = data.usuario.nombre_usuario;
+                codigoGeneradoActual = String(data.codigo);
+
+                document.getElementById('targetEmailDisplay').textContent = `${data.usuario.nombre_completo} (@${data.usuario.nombre_usuario})`;
+                document.getElementById('generatedCodeBadge').textContent = codigoGeneradoActual;
+
+                document.getElementById('step-1').classList.add('hidden');
+                const step2 = document.getElementById('step-2');
+                step2.classList.remove('hidden');
+
+                const firstInput = step2.querySelector('.code-input');
+                if (firstInput) firstInput.focus();
+            } catch (err) {
+                showNotification('Error de Conexión', 'No se pudo conectar con el servidor Node.js: ' + err.message, false);
+            }
+        }
+
+        function rellenarCodigoAutomatico() {
+            const inputs = document.querySelectorAll('.code-input');
+            codigoGeneradoActual.split('').forEach((char, idx) => {
+                if (inputs[idx]) inputs[idx].value = char;
+            });
+            document.getElementById('newPassword').focus();
+        }
+
+        // Salto automático entre las 6 casillas del código
+        const codeInputs = document.querySelectorAll('.code-input');
+        codeInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < codeInputs.length - 1) {
+                    codeInputs[index + 1].focus();
+                }
+            });
+
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && !e.target.value && index > 0) {
+                    codeInputs[index - 1].focus();
+                }
+            });
+        });
+
+        // Paso 2: Validar código y actualizar clave_hash en SQL Server
+        async function handleResetPassword(e) {
+            e.preventDefault();
+            const codigoIngresado = Array.from(document.querySelectorAll('.code-input')).map(i => i.value.trim()).join('');
+            const pass1 = document.getElementById('newPassword').value;
+            const pass2 = document.getElementById('confirmPassword').value;
+
+            if (codigoIngresado !== codigoGeneradoActual) {
+                showNotification('Código Incorrecto', 'El código de 6 dígitos ingresado no coincide con el código de seguridad generado.', false);
+                return;
+            }
+
+            if (pass1 !== pass2) {
+                showNotification('Error de Coincidencia', 'Las contraseñas ingresadas no coinciden. Por favor verifica e intenta nuevamente.', false);
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/recuperar/restablecer`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre_usuario: usuarioVerificado,
+                        nueva_password: pass1
+                    })
+                });
+
+                const data = await res.json();
+                if (!res.ok || !data.ok) {
+                    showNotification('Error al Actualizar', data.mensaje || 'No se pudo actualizar la contraseña.', false);
+                    return;
+                }
+
+                showNotification('¡Contraseña Restablecida!', data.mensaje, true);
+            } catch (err) {
+                showNotification('Error de Red', 'Error al guardar la nueva contraseña en SQL Server: ' + err.message, false);
+            }
+        }
+
+        function showNotification(title, message, isSuccess) {
+            modalRedirectOnClose = isSuccess;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').textContent = message;
+            document.getElementById('modalPrimaryBtn').textContent = isSuccess ? 'Ir a Iniciar Sesión' : 'Intentar de Nuevo';
+            
+            const iconContainer = document.getElementById('modalIconContainer');
+            if (isSuccess) {
+                iconContainer.className = "w-14 h-14 rounded-full bg-green-100 text-green-600 mx-auto flex items-center justify-center text-2xl";
+                iconContainer.innerHTML = '<i class="fa-solid fa-circle-check"></i>';
+            } else {
+                iconContainer.className = "w-14 h-14 rounded-full bg-red-100 text-red-600 mx-auto flex items-center justify-center text-2xl";
+                iconContainer.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+            }
+
+            document.getElementById('statusModal').classList.remove('hidden');
+        }
+
+        function handleModalButton() {
+            document.getElementById('statusModal').classList.add('hidden');
+            if (modalRedirectOnClose) {
+                goToLogin();
+            }
+        }
+
+        function goToLogin() {
+            window.location.href = 'inicio_de_sesi_n_sysferreter_a.html';
+        }
+    </script>
+</body>
+</html>

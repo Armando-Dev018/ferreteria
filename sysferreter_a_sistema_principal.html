@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SysFerretería - Ferretería Cabrera</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .bg-brand-orange { background-color: #f25c05; }
+        .text-brand-orange { color: #f25c05; }
+        .border-brand-orange { border-color: #f25c05; }
+        .tab-transition { transition: all 0.2s ease-in-out; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#f8fafc] text-gray-800">
+
+    <!-- Barra de Navegación Principal -->
+    <header class="bg-[#343A40] text-white shadow-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('inicio')">
+                    <svg class="h-10 w-auto" viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M 60 70 C 20 70 15 25 55 25 C 75 25 85 35 90 42 L 72 50 C 68 44 62 39 52 39 C 32 39 34 56 52 56 C 63 56 70 51 76 45 L 88 56 C 79 65 70 70 60 70 Z" fill="#FFFFFF"/>
+                        <path d="M 90 25 L 115 60 L 140 25 L 158 25 L 158 70 L 142 70 L 142 42 L 122 70 L 108 70 L 88 42 L 88 70 L 74 70 L 74 25 Z" fill="#FFFFFF"/>
+                        <g fill="#F25C05">
+                            <path d="M 180 32 C 160 32 148 44 146 55 L 214 55 C 212 44 200 32 180 32 Z"/>
+                            <path d="M 142 56 L 218 56 C 221 56 223 58 223 60 C 223 62 221 64 218 64 L 142 64 C 139 64 137 62 137 60 C 137 58 139 56 142 56 Z"/>
+                        </g>
+                    </svg>
+                    <span class="font-bold text-lg tracking-wide hidden sm:inline">SYSFERRETERÍA</span>
+                </div>
+
+                <nav class="flex space-x-1 sm:space-x-2 overflow-x-auto py-2 items-center">
+                    <button onclick="switchTab('inicio')" id="tab-inicio" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium bg-[#f25c05] text-white tab-transition flex items-center space-x-2">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Inicio</span>
+                    </button>
+                    <button onclick="switchTab('productos')" id="tab-productos" class="tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-gray-200 hover:bg-[#f25c05] hover:text-white tab-transition flex items-center space-x-2">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                        <span>Inventario</span>
+                    </button>
+                    <a href="ventas.html" class="px-3.5 py-2 rounded-lg text-sm font-medium text-gray-200 hover:bg-[#f25c05] hover:text-white tab-transition flex items-center space-x-2">
+                        <i class="fa-solid fa-cash-register"></i>
+                        <span>Ventas (POS)</span>
+                    </a>
+                    <a href="nomina.html" class="px-3.5 py-2 rounded-lg text-sm font-medium text-gray-200 hover:bg-[#f25c05] hover:text-white tab-transition flex items-center space-x-2">
+                        <i class="fa-solid fa-money-check-dollar"></i>
+                        <span>Nómina y Caja</span>
+                    </a>
+                    <a href="perfil de usuario.html" class="px-3.5 py-2 rounded-lg text-sm font-medium text-gray-200 hover:bg-[#f25c05] hover:text-white tab-transition flex items-center space-x-2">
+                        <i class="fa-solid fa-user-gear"></i>
+                        <span>Perfil / Bitácora</span>
+                    </a>
+                    <a href="inicio_de_sesi_n_sysferreter_a.html" onclick="localStorage.removeItem('sysferreteria_user')" class="px-3.5 py-2 rounded-lg text-sm font-medium bg-red-600/90 text-white hover:bg-red-700 tab-transition flex items-center space-x-2">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span class="hidden md:inline">Salir</span>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <!-- VISTA 1: INICIO Y DASHBOARD EN VIVO -->
+        <section id="view-inicio" class="view-section space-y-6">
+            <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-200 flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="space-y-4 max-w-xl text-center md:text-left">
+                    <span class="inline-block px-3 py-1 bg-orange-100 text-brand-orange font-semibold text-xs rounded-full uppercase tracking-wider">Ferretería Cabrera • Panel del Encargado</span>
+                    <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 tracking-tight">¡Bienvenido al Sistema de Gestión!</h1>
+                    <p class="text-gray-600 text-base leading-relaxed">
+                        Controla el inventario ferretero, opera el Punto de Venta con descuento automático por Triggers y administra el pago de raya semanal conectado al Corte de Caja.
+                    </p>
+                    <div class="pt-2 flex flex-wrap gap-3 justify-center md:justify-start">
+                        <button onclick="switchTab('productos')" class="px-5 py-3 bg-brand-orange text-white font-semibold rounded-xl shadow hover:opacity-95 transition">
+                            <i class="fa-solid fa-boxes-stacked mr-2"></i>Gestionar Inventario
+                        </button>
+                        <a href="ventas.html" class="px-5 py-3 bg-gray-800 text-white font-semibold rounded-xl hover:bg-gray-900 transition">
+                            <i class="fa-solid fa-cash-register mr-2"></i>Ir a Punto de Venta
+                        </a>
+                        <a href="nomina.html" class="px-5 py-3 bg-gray-100 text-gray-800 font-semibold rounded-xl border border-gray-300 hover:bg-gray-200 transition">
+                            <i class="fa-solid fa-users-gear mr-2"></i>Nómina y Corte de Caja
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Ilustración Vectorial del Operario -->
+                <div class="flex-shrink-0 bg-orange-50/50 p-6 rounded-3xl border border-orange-100 flex flex-col items-center">
+                    <div class="relative bg-white px-4 py-2 rounded-2xl shadow-sm border border-orange-200 mb-4">
+                        <p class="text-brand-orange font-bold text-sm" id="welcomeUserBadge">¡SQL Server Conectado!</p>
+                    </div>
+                    <svg class="w-40 h-40 drop-shadow-md" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M70 140V180H90V160H110V180H130V140H115V130H85V140H70Z" fill="#ffedd5"/>
+                        <path d="M85 130H115V170H85V130Z" fill="#fdba74"/>
+                        <rect x="90" y="135" width="6" height="30" fill="white"/>
+                        <rect x="104" y="135" width="6" height="30" fill="white"/>
+                        <circle cx="100" cy="90" r="25" fill="#fde047"/>
+                        <path d="M70 85C70 65 83 50 100 50C117 50 130 65 130 85H138C142 85 142 90 138 90H62C58 90 58 85 62 85H70Z" fill="#f25c05"/>
+                        <rect x="92" y="42" width="16" height="10" rx="3" fill="#f25c05"/>
+                        <path d="M55 110L70 135" stroke="#fdba74" stroke-width="12" stroke-linecap="round"/>
+                        <path d="M145 110L130 135" stroke="#fdba74" stroke-width="12" stroke-linecap="round"/>
+                        <circle cx="50" cy="105" r="8" fill="#fde047"/>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Tarjetas de Resumen Rápido Conectadas a SQL Server -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 border-l-4 border-l-[#f25c05]">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Efectivo Esperado en Caja</p>
+                    <h3 id="dash-saldo-caja" class="text-2xl font-extrabold text-gray-900 mt-2">$0.00</h3>
+                    <p class="text-xs text-green-600 font-semibold mt-1">Corte Activo #1</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 border-l-4 border-l-green-500">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Ingresos por Ventas</p>
+                    <h3 id="dash-ventas-dia" class="text-2xl font-extrabold text-gray-900 mt-2">$0.00</h3>
+                    <p id="dash-tickets-count" class="text-xs text-gray-500 mt-1">0 tickets emitidos</p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 border-l-4 border-l-blue-500">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Artículos en Catálogo</p>
+                    <h3 id="dash-total-productos" class="text-2xl font-extrabold text-gray-900 mt-2">0</h3>
+                    <p class="text-xs text-blue-600 font-Sincronizado con SQL Serversemibold mt-1"></p>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 border-l-4 border-l-red-500">
+                    <p class="text-xs font-bold text-gray-500 uppercase">Alertas Stock Mínimo</p>
+                    <h3 id="dash-alertas-count" class="text-2xl font-extrabold text-red-600 mt-2">0</h3>
+                    <p class="text-xs text-gray-500 mt-1"></p>
+                </div>
+            </div>
+
+            <!-- Tabla de Alertas de Stock Mínimo en Vivo -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-gray-800"><i class="fa-solid fa-triangle-exclamation text-red-500 mr-2"></i>Productos en Alerta de Stock Mínimo </h3>
+                        <p class="text-xs text-gray-500"></p>
+                    </div>
+                    <button onclick="switchTab('productos')" class="text-xs font-semibold text-brand-orange hover:underline">Ir a reabastecer →</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-500 text-xs uppercase border-b border-gray-200">
+                                <th class="py-3 px-5">Código</th>
+                                <th class="py-3 px-5">Producto</th>
+                                <th class="py-3 px-5">Categoría</th>
+                                <th class="py-3 px-5">Stock Actual</th>
+                                <th class="py-3 px-5">Mínimo Requerido</th>
+                                <th class="py-3 px-5">Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="alertasTableBody" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- VISTA 2: INVENTARIO Y PRODUCTOS -->
+        <section id="view-productos" class="view-section hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                
+                <!-- Menú Lateral: Categorías Principales -->
+                <div class="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 lg:col-span-1 h-fit">
+                    <div class="flex items-center justify-between mb-3 px-2">
+                        <h2 class="text-xs font-bold text-gray-400 uppercase tracking-wider">Categorías</h2>
+                        <button onclick="selectCategory('Todas')" class="text-xs text-brand-orange font-semibold hover:underline">Ver Todas</button>
+                    </div>
+                    <div id="mainCategoriesList" class="space-y-1"></div>
+                </div>
+
+                <!-- Subcategorías y Tabla Dinámica -->
+                <div class="lg:col-span-3 space-y-6">
+                    
+                    <div class="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-200">
+                        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                            <div>
+                                <h2 id="currentCategoryTitle" class="text-xl font-bold text-gray-800">Todas las Categorías</h2>
+                                <p class="text-xs text-gray-500">Filtra por subcategoría</p>
+                            </div>
+                            <button onclick="openNewProductModal()" class="px-4 py-2 bg-brand-orange text-white text-xs font-bold rounded-xl shadow hover:opacity-90 transition">
+                                <i class="fa-solid fa-plus mr-1"></i> + Nuevo Producto
+                            </button>
+                        </div>
+                        <div id="subCategoriesGrid" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <!-- Tabla Dinámica de Productos -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div class="p-4 sm:p-6 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <h3 id="tableTitle" class="text-lg font-bold text-gray-800">Inventario General</h3>
+                                <p id="tableSubtitle" class="text-xs text-gray-500"></p>
+                            </div>
+                            <div class="relative w-full sm:w-64">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input type="text" id="productSearch" oninput="filterTableProducts()" placeholder="Buscar nombre o código..." class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-brand-orange">
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b border-gray-200">
+                                        <th class="py-3.5 px-5 font-semibold">Nombre</th>
+                                        <th class="py-3.5 px-4 font-semibold">Tamaño</th>
+                                        <th class="py-3.5 px-4 font-semibold">Marca</th>
+                                        <th class="py-3.5 px-4 font-semibold">Código</th>
+                                        <th class="py-3.5 px-4 font-semibold">Stock</th>
+                                        <th class="py-3.5 px-4 font-semibold">Precio</th>
+                                        <th class="py-3.5 px-4 font-semibold text-center">Editar</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTableBody" class="divide-y divide-gray-100 text-sm text-gray-700"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Único para Editar Producto (sp_ActualizarProducto) -->
+    <div id="editProductModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 text-gray-800 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="p-2 bg-orange-100 text-brand-orange rounded-lg">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800">Editar Producto (sp_ActualizarProducto)</h3>
+                </div>
+                <button onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <form id="editProductForm" onsubmit="saveProductChanges(event)" class="space-y-4 text-sm">
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Nombre del Producto</label>
+                    <input type="text" id="editName" required class="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-orange">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Código de Barras (PK)</label>
+                        <input type="text" id="editCodigo" readonly class="w-full px-3.5 py-2 border border-gray-200 bg-gray-100 font-mono font-bold rounded-xl text-gray-600">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Marca</label>
+                        <input type="text" id="editMarca" required class="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-orange">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Tamaño / Medida</label>
+                        <input type="text" id="editTamano" required class="w-full px-3.5 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-orange">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Stock Actual</label>
+                        <input type="number" id="editCantidad" required min="0" step="1" class="w-full px-3.5 py-2 border border-gray-200 rounded-xl font-bold text-gray-800 focus:outline-none focus:border-brand-orange">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Precio Venta ($)</label>
+                        <input type="number" id="editPrecio" required min="0" step="0.50" class="w-full px-3.5 py-2 border border-gray-200 rounded-xl text-brand-orange font-bold focus:outline-none focus:border-brand-orange">
+                    </div>
+                </div>
+
+                <div class="pt-3 flex items-center justify-end space-x-3 border-t border-gray-100">
+                    <button type="button" onclick="closeEditModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="px-5 py-2 bg-brand-orange text-white rounded-xl font-semibold hover:opacity-90 transition shadow">
+                        Guardar en SQL Server
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Agregar Nuevo Producto -->
+    <div id="newProductModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 text-gray-800 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                <h3 class="text-lg font-bold text-gray-800">+ Alta de Producto en Inventario</h3>
+                <button onclick="closeNewProductModal()" class="text-gray-400 hover:text-gray-600 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <form onsubmit="createNewProduct(event)" class="space-y-3 text-sm">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Código de Barras</label>
+                        <input type="text" id="newCodigo" placeholder="Ej. HER-009" required class="w-full px-3.5 py-2 border border-gray-200 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Categoría</label>
+                        <select id="newCategoria" class="w-full px-3.5 py-2 border border-gray-200 rounded-xl">
+                            <option value="Construcción">Construcción</option>
+                            <option value="Herramientas">Herramientas</option>
+                            <option value="Electricidad">Electricidad</option>
+                            <option value="Plomería y fontanería">Plomería y fontanería</option>
+                            <option value="Pinturas y Acabados">Pinturas y Acabados</option>
+                            <option value="Cerrajería y Herrajes">Cerrajería y Herrajes</option>
+                            <option value="Carpintería">Carpintería</option>
+                            <option value="Jardinería">Jardinería</option>
+                            <option value="Seguridad industrial">Seguridad industrial</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-medium text-gray-700 mb-1">Nombre del Producto</label>
+                    <input type="text" id="newNombre" required placeholder="Ej. Pinza de Presión 10 pulgadas" class="w-full px-3.5 py-2 border border-gray-200 rounded-xl">
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Subcategoría</label>
+                        <input type="text" id="newSubcategoria" value="General" required class="w-full px-3.5 py-2 border border-gray-200 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Marca</label>
+                        <input type="text" id="newMarca" value="Truper" required class="w-full px-3.5 py-2 border border-gray-200 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Tamaño</label>
+                        <input type="text" id="newTamano" value="Estándar" required class="w-full px-3.5 py-2 border border-gray-200 rounded-xl">
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Precio Venta ($)</label>
+                        <input type="number" id="newPrecio" required min="1" step="0.50" class="w-full px-3.5 py-2 border border-gray-200 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Stock Inicial</label>
+                        <input type="number" id="newStock" required min="0" value="20" class="w-full px-3.5 py-2 border border-gray-200 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-gray-700 mb-1">Stock Mínimo</label>
+                        <input type="number" id="newMinimo" required min="1" value="5" class="w-full px-3.5 py-2 border border-gray-200 rounded-xl">
+                    </div>
+                </div>
+                <div class="pt-3 flex justify-end space-x-3 border-t border-gray-100">
+                    <button type="button" onclick="closeNewProductModal()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl font-semibold">Cancelar</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-orange text-white rounded-xl font-semibold shadow">Registrar Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Notificación -->
+    <div id="modalOverlay" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-gray-800 text-center shadow-2xl">
+            <div class="w-12 h-12 rounded-full bg-orange-100 text-brand-orange mx-auto flex items-center justify-center mb-4 text-xl">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 id="modalTitle" class="text-lg font-bold mb-2">Notificación</h3>
+            <p id="modalBody" class="text-sm text-gray-600 mb-6">Mensaje del sistema.</p>
+            <button onclick="closeModal()" class="w-full py-2.5 bg-brand-orange text-white font-semibold rounded-xl hover:opacity-90 transition">
+                Aceptar
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+        let catalogoSQL = [];
+        let currentCategory = 'Todas';
+        let currentSubcategory = 'Todas';
+
+        const categoriasBase = [
+            "Construcción", "Herramientas", "Electricidad", "Plomería y fontanería",
+            "Pinturas y Acabados", "Cerrajería y Herrajes", "Carpintería", "Jardinería", "Seguridad industrial"
+        ];
+
+        async function cargarDatosDesdeSQL() {
+            try {
+                // 1. Cargar Productos
+                const resProd = await fetch(`${API_BASE}/productos`);
+                catalogoSQL = await resProd.json();
+                document.getElementById('dash-total-productos').textContent = catalogoSQL.length;
+
+                // 2. Cargar Caja Actual
+                const resCaja = await fetch(`${API_BASE}/caja/actual`);
+                const caja = await resCaja.json();
+                if (caja && caja.id_corte) {
+                    document.getElementById('dash-saldo-caja').textContent = `$${parseFloat(caja.saldo_final_esperado).toFixed(2)}`;
+                }
+
+                // 3. Cargar Resumen Ventas
+                const resVentas = await fetch(`${API_BASE}/ventas/resumen`);
+                const dataVentas = await resVentas.json();
+                if (dataVentas && dataVentas.resumen) {
+                    document.getElementById('dash-ventas-dia').textContent = `$${parseFloat(dataVentas.resumen.ventas_dia).toFixed(2)}`;
+                    document.getElementById('dash-tickets-count').textContent = `${dataVentas.resumen.tickets_emitidos} tickets emitidos`;
+                }
+
+                // 4. Cargar Alertas de Stock Mínimo
+                const resAlertas = await fetch(`${API_BASE}/inventario/alertas`);
+                const alertas = await resAlertas.json();
+                document.getElementById('dash-alertas-count').textContent = alertas.length;
+                renderAlertasTable(alertas);
+
+                renderMainCategories();
+                renderSubcategories();
+                renderProductsTable();
+            } catch (err) {
+                console.error('Error conectando con el backend:', err);
+            }
+        }
+
+        function renderAlertasTable(alertas) {
+            const tbody = document.getElementById('alertasTableBody');
+            tbody.innerHTML = '';
+            if (!alertas || alertas.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="py-4 px-5 text-center text-gray-500">Todo el inventario se encuentra por encima del stock mínimo.</td></tr>`;
+                return;
+            }
+            alertas.forEach(a => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-red-50/40">
+                        <td class="py-3 px-5 font-mono text-xs font-bold text-gray-700">${a.codigo_barras}</td>
+                        <td class="py-3 px-5 font-semibold text-gray-900">${a.producto}</td>
+                        <td class="py-3 px-5 text-gray-600">${a.categoria}</td>
+                        <td class="py-3 px-5 font-bold text-red-600">${a.stock_actual} ${a.unidad}</td>
+                        <td class="py-3 px-5 text-gray-600">${a.stock_minimo} ${a.unidad}</td>
+                        <td class="py-3 px-5">
+                            <button onclick="abrirEdicionPorCodigo('${a.codigo_barras}')" class="px-3 py-1 bg-orange-100 text-brand-orange rounded-lg text-xs font-bold hover:bg-orange-200">
+                                Reabastecer
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn px-3.5 py-2 rounded-lg text-sm font-medium text-gray-200 hover:bg-[#f25c05] hover:text-white tab-transition flex items-center space-x-2";
+            });
+            const activeBtn = document.getElementById(`tab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn px-3.5 py-2 rounded-lg text-sm font-medium bg-[#f25c05] text-white tab-transition flex items-center space-x-2 shadow-sm";
+            }
+        }
+
+        function renderMainCategories() {
+            const container = document.getElementById('mainCategoriesList');
+            container.innerHTML = '';
+
+            categoriasBase.forEach(cat => {
+                const count = catalogoSQL.filter(p => p.categoria === cat).length;
+                const isActive = cat === currentCategory;
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left px-3.5 py-2.5 rounded-xl text-sm font-medium transition flex items-center justify-between ${isActive ? 'bg-[#ffedd5] text-brand-orange font-bold shadow-sm' : 'text-gray-600 hover:bg-gray-100'}`;
+                btn.innerHTML = `<span>${cat}</span><span class="text-xs px-2 py-0.5 rounded-full ${isActive ? 'bg-brand-orange text-white' : 'bg-gray-100 text-gray-600'}">${count}</span>`;
+                btn.onclick = () => selectCategory(cat);
+                container.appendChild(btn);
+            });
+        }
+
+        function selectCategory(categoryName) {
+            currentCategory = categoryName;
+            currentSubcategory = 'Todas';
+            document.getElementById('currentCategoryTitle').textContent = categoryName === 'Todas' ? 'Todas las Categorías' : categoryName;
+            renderMainCategories();
+            renderSubcategories();
+            renderProductsTable();
+        }
+
+        function renderSubcategories() {
+            const container = document.getElementById('subCategoriesGrid');
+            container.innerHTML = '';
+
+            const filtrados = currentCategory === 'Todas'
+                ? catalogoSQL
+                : catalogoSQL.filter(p => p.categoria === currentCategory);
+
+            const subcats = ['Todas', ...new Set(filtrados.map(p => p.subcategoria || 'General'))];
+
+            subcats.forEach(sub => {
+                const isActive = sub === currentSubcategory;
+                const btn = document.createElement('button');
+                btn.className = `px-3.5 py-2 rounded-xl text-xs font-semibold transition border ${isActive ? 'bg-brand-orange text-white border-brand-orange shadow-sm' : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-orange-50'}`;
+                btn.textContent = sub;
+                btn.onclick = () => {
+                    currentSubcategory = sub;
+                    renderSubcategories();
+                    renderProductsTable();
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        function renderProductsTable() {
+            const tbody = document.getElementById('productsTableBody');
+            tbody.innerHTML = '';
+
+            const lista = catalogoSQL.filter(p => {
+                const matchCat = currentCategory === 'Todas' || p.categoria === currentCategory;
+                const matchSub = currentSubcategory === 'Todas' || (p.subcategoria || 'General') === currentSubcategory;
+                return matchCat && matchSub;
+            });
+
+            document.getElementById('tableTitle').textContent = `Inventario: ${currentCategory} (${lista.length} productos)`;
+
+            lista.forEach(p => {
+                const bajoStock = parseFloat(p.stock) <= parseFloat(p.stock_minimo || 5);
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition";
+                tr.innerHTML = `
+                    <td class="py-3.5 px-5 font-medium text-gray-800">
+                        ${p.nombre}
+                        <span class="block text-xs text-gray-400">${p.categoria} • ${p.subcategoria || 'General'}</span>
+                    </td>
+                    <td class="py-3.5 px-4 text-gray-600">${p.tamano || 'Estándar'}</td>
+                    <td class="py-3.5 px-4 text-gray-600">${p.marca || 'Cabrera'}</td>
+                    <td class="py-3.5 px-4 text-gray-500 font-mono text-xs font-bold">${p.codigo}</td>
+                    <td class="py-3.5 px-4 font-bold ${bajoStock ? 'text-red-600' : 'text-gray-800'}">
+                        ${p.stock} ${p.unidad || 'PZA'}
+                        ${bajoStock ? '<span class="ml-1 px-2 py-0.5 bg-red-100 text-red-700 rounded-full text-[10px]">Bajo</span>' : ''}
+                    </td>
+                    <td class="py-3.5 px-4 text-brand-orange font-bold">$${parseFloat(p.precio).toFixed(2)}</td>
+                    <td class="py-3.5 px-4 text-center">
+                        <button onclick="abrirEdicionPorCodigo('${p.codigo}')" title="Editar en SQL Server" class="p-2 text-gray-500 hover:text-brand-orange hover:bg-orange-50 rounded-lg transition">
+                            <i class="fa-solid fa-pen-to-square text-base"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function abrirEdicionPorCodigo(codigo) {
+            const p = catalogoSQL.find(item => item.codigo === codigo);
+            if (!p) return;
+
+            document.getElementById('editCodigo').value = p.codigo;
+            document.getElementById('editName').value = p.nombre;
+            document.getElementById('editMarca').value = p.marca || 'Cabrera';
+            document.getElementById('editTamano').value = p.tamano || 'Estándar';
+            document.getElementById('editCantidad').value = parseFloat(p.stock);
+            document.getElementById('editPrecio').value = parseFloat(p.precio);
+
+            document.getElementById('editProductModal').classList.remove('hidden');
+        }
+
+        function closeEditModal() {
+            document.getElementById('editProductModal').classList.add('hidden');
+        }
+
+        async function saveProductChanges(e) {
+            e.preventDefault();
+            const codigo = document.getElementById('editCodigo').value;
+            const payload = {
+                nombre: document.getElementById('editName').value,
+                marca: document.getElementById('editMarca').value,
+                tamano: document.getElementById('editTamano').value,
+                stock: parseFloat(document.getElementById('editCantidad').value),
+                precio: parseFloat(document.getElementById('editPrecio').value)
+            };
+
+            try {
+                const resp = await fetch(`${API_BASE}/productos/${codigo}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await resp.json();
+                closeEditModal();
+                if (data.ok) {
+                    await cargarDatosDesdeSQL();
+                    showAlertModal('Inventario Actualizado', data.mensaje);
+                } else {
+                    alert('Error: ' + data.mensaje);
+                }
+            } catch (err) {
+                alert('Error de red al guardar cambios: ' + err.message);
+            }
+        }
+
+        function openNewProductModal() {
+            document.getElementById('newProductModal').classList.remove('hidden');
+        }
+
+        function closeNewProductModal() {
+            document.getElementById('newProductModal').classList.add('hidden');
+        }
+
+        async function createNewProduct(e) {
+            e.preventDefault();
+            const payload = {
+                codigo: document.getElementById('newCodigo').value,
+                categoria: document.getElementById('newCategoria').value,
+                nombre: document.getElementById('newNombre').value,
+                subcategoria: document.getElementById('newSubcategoria').value,
+                marca: document.getElementById('newMarca').value,
+                tamano: document.getElementById('newTamano').value,
+                precio: document.getElementById('newPrecio').value,
+                stock: document.getElementById('newStock').value,
+                stock_minimo: document.getElementById('newMinimo').value
+            };
+
+            try {
+                const resp = await fetch(`${API_BASE}/productos`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await resp.json();
+                if (data.ok) {
+                    e.target.reset();
+                    closeNewProductModal();
+                    await cargarDatosDesdeSQL();
+                    showAlertModal('Producto Registrado', data.mensaje);
+                } else {
+                    alert('Error al crear producto: ' + data.mensaje);
+                }
+            } catch (err) {
+                alert('Error de conexión: ' + err.message);
+            }
+        }
+
+        function filterTableProducts() {
+            const query = document.getElementById('productSearch').value.toLowerCase();
+            const rows = document.querySelectorAll('#productsTableBody tr');
+            rows.forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(query) ? '' : 'none';
+            });
+        }
+
+        function showAlertModal(title, message) {
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalBody').textContent = message;
+            document.getElementById('modalOverlay').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.add('hidden');
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedUser = localStorage.getItem('sysferreteria_user');
+            if (savedUser) {
+                try {
+                    const u = JSON.parse(savedUser);
+                    document.getElementById('welcomeUserBadge').textContent = `Encargado: ${u.nombre_completo || u.nombre_usuario}`;
+                } catch (_) {}
+            }
+            cargarDatosDesdeSQL();
+        });
+    </script>
+</body>
+</html>

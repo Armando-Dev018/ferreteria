@@ -1,0 +1,14 @@
+{
+  "name": "gps-sysferreteria",
+  "version": "1.0.0",
+  "description": "Backend Node.js para Ferretería Cabrera",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mssql": "^11.0.1"
+  }
+}

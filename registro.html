@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de Usuario - SysFerretería</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #525D65;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 30px 20px;
+        }
+
+        .bg-icon {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.05);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .card {
+            background-color: #F25C05;
+            width: 100%;
+            max-width: 480px;
+            padding: 35px 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .logo-svg {
+            height: 55px;
+            width: auto;
+        }
+
+        .title {
+            color: #FFFFFF;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 13.5px;
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .register-form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .form-group {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-label {
+            color: #FFFFFF;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 42px;
+            border-radius: 10px;
+            border: none;
+            padding: 0 14px;
+            font-size: 13.5px;
+            color: #2D3748;
+            background-color: #FFFFFF;
+            outline: none;
+        }
+
+        .btn-save {
+            width: 100%;
+            height: 46px;
+            background-color: #FFFFFF;
+            color: #2D3748;
+            font-weight: 700;
+            font-size: 15px;
+            border: none;
+            border-radius: 23px;
+            cursor: pointer;
+            margin-top: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            transition: transform 0.1s ease, background-color 0.2s ease;
+        }
+
+        .btn-save:hover {
+            background-color: #F8F9FA;
+            transform: translateY(-1px);
+        }
+
+        .card-footer {
+            margin-top: 22px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 13.5px;
+            color: #FFFFFF;
+        }
+
+        .btn-login {
+            background: #FFFFFF;
+            color: #2D3748;
+            text-decoration: none;
+            padding: 6px 16px;
+            border-radius: 16px;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #FFFFFF;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 360px;
+            width: 90%;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.3);
+        }
+
+        .modal-icon {
+            width: 60px;
+            height: 60px;
+            background: #DEF7EC;
+            color: #0E9F6E;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 15px auto;
+        }
+
+        .modal-title {
+            color: #1A202C;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .modal-desc {
+            color: #718096;
+            font-size: 13.5px;
+            margin-bottom: 20px;
+        }
+
+        .modal-btn {
+            background: #F25C05;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 20px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <div class="logo-container">
+            <svg class="logo-svg" viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 60 70 C 20 70 15 25 55 25 C 75 25 85 35 90 42 L 72 50 C 68 44 62 39 52 39 C 32 39 34 56 52 56 C 63 56 70 51 76 45 L 88 56 C 79 65 70 70 60 70 Z" fill="#525D65"/>
+                <path d="M 90 25 L 115 60 L 140 25 L 158 25 L 158 70 L 142 70 L 142 42 L 122 70 L 108 70 L 88 42 L 88 70 L 74 70 L 74 25 Z" fill="#525D65"/>
+                <g fill="#FFFFFF">
+                    <path d="M 180 32 C 160 32 148 44 146 55 L 214 55 C 212 44 200 32 180 32 Z"/>
+                    <path d="M 142 56 L 218 56 C 221 56 223 58 223 60 C 223 62 221 64 218 64 L 142 64 C 139 64 137 62 137 60 C 137 58 139 56 142 56 Z"/>
+                </g>
+            </svg>
+        </div>
+
+        <h1 class="title">Crear nueva cuenta</h1>
+        <p class="subtitle">Registra un nuevo acceso de encargado en SysFerretería</p>
+
+        <form id="register-form" class="register-form">
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Nombre(s)</label>
+                    <input type="text" id="reg-nombre" class="form-input" placeholder="Ej. Jorge Armando" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Apellidos</label>
+                    <input type="text" id="reg-apellidos" class="form-input" placeholder="Ej. Castañón" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Correo electrónico</label>
+                <input type="email" id="reg-correo" class="form-input" placeholder="usuario@sysferreteria.com" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nombre de usuario</label>
+                <input type="text" id="reg-username" class="form-input" placeholder="Ej. jorge_admin" required>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" id="reg-pass" class="form-input" placeholder="••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Confirmar Clave</label>
+                    <input type="password" id="confirm-reg-pass" class="form-input" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-save">Guardar Registro en SQL Server</button>
+        </form>
+
+        <div class="card-footer">
+            <span>¿Ya tienes cuenta?</span>
+            <a href="inicio_de_sesi_n_sysferreter_a.html" class="btn-login">Iniciar Sesión</a>
+        </div>
+    </div>
+
+    <div id="success-modal" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-icon">✓</div>
+            <h2 class="modal-title">¡Registro Exitoso!</h2>
+            <p class="modal-desc">El usuario ha sido guardado correctamente en la tabla Usuario de SQL Server.</p>
+            <button class="modal-btn" onclick="window.location.href='inicio_de_sesi_n_sysferreter_a.html';">Ir a Iniciar Sesión</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const pass = document.getElementById('reg-pass').value;
+            const confirmPass = document.getElementById('confirm-reg-pass').value;
+
+            if (pass !== confirmPass) {
+                alert('Las contraseñas no coinciden. Por favor verifica antes de guardar.');
+                return;
+            }
+
+            const payload = {
+                nombre_completo: `${document.getElementById('reg-nombre').value.trim()} ${document.getElementById('reg-apellidos').value.trim()}`,
+                correo: document.getElementById('reg-correo').value.trim(),
+                username: document.getElementById('reg-username').value.trim(),
+                password: pass,
+                rol: 'Encargado'
+            };
+
+            try {
+                const res = await fetch('http://localhost:3000/api/registro', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (!res.ok || !data.ok) {
+                    alert(data.mensaje || 'Error al registrar el usuario.');
+                    return;
+                }
+                document.getElementById('success-modal').classList.add('active');
+            } catch (err) {
+                alert('Error de conexión con el backend: ' + err.message);
+            }
+        });
+    </script>
+</body>
+</html>

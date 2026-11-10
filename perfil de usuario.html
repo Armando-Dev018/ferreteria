@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil de Usuario y Bitácora - SysFerretería</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #f8fafc;
+            min-height: 100vh;
+            color: #2D3748;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-nav {
+            background-color: #343A40;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            color: #FFFFFF;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .header-logo-svg {
+            height: 38px;
+            width: auto;
+        }
+
+        .header-menu {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-item {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: #F25C05;
+            color: #FFFFFF;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 25px;
+        }
+
+        .profile-card {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            height: fit-content;
+        }
+
+        .avatar-container {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background-color: #F25C05;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: 700;
+            border: 4px solid #F8F9FA;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .status-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 16px;
+            height: 16px;
+            background-color: #10B981;
+            border: 3px solid #FFFFFF;
+            border-radius: 50%;
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1A202C;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .user-role {
+            font-size: 13.5px;
+            color: #F25C05;
+            font-weight: 600;
+            background: #FFF5EE;
+            padding: 4px 14px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .info-list {
+            width: 100%;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+
+        .info-label {
+            color: #718096;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #2D3748;
+            font-weight: 600;
+        }
+
+        .btn-logout {
+            margin-top: 25px;
+            width: 100%;
+            padding: 10px;
+            background-color: #FFF5F5;
+            color: #E53E3E;
+            border: 1px solid #FEB2B2;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-logout:hover {
+            background-color: #FED7D7;
+        }
+
+        .content-panel {
+            background: #FFFFFF;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel-tabs {
+            display: flex;
+            gap: 20px;
+            border-bottom: 2px solid #E2E8F0;
+            margin-bottom: 25px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 4px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #718096;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.2s;
+        }
+
+        .tab-btn.active {
+            color: #F25C05;
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: #F25C05;
+            border-radius: 3px 3px 0 0;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        .form-label {
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #4A5568;
+        }
+
+        .form-input, .form-select {
+            height: 42px;
+            padding: 0 14px;
+            border-radius: 8px;
+            border: 1px solid #CBD5E0;
+            font-size: 14px;
+            color: #2D3748;
+            background-color: #FFFFFF;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus, .form-select:focus {
+            border-color: #F25C05;
+            box-shadow: 0 0 0 3px rgba(242, 92, 5, 0.15);
+        }
+
+        .form-input:disabled {
+            background-color: #F7FAFC;
+            color: #718096;
+            cursor: not-allowed;
+        }
+
+        .btn-save {
+            margin-top: 25px;
+            align-self: flex-end;
+            background-color: #F25C05;
+            color: #FFFFFF;
+            border: none;
+            padding: 11px 28px;
+            border-radius: 20px;
+            font-size: 14.5px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(242, 92, 5, 0.3);
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn-save:hover {
+            background-color: #D94E04;
+            transform: translateY(-1px);
+        }
+
+        .activity-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13.5px;
+        }
+
+        .activity-table th {
+            background-color: #F7FAFC;
+            color: #4A5568;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 14px;
+            border-bottom: 2px solid #E2E8F0;
+        }
+
+        .activity-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #E2E8F0;
+            color: #2D3748;
+        }
+
+        .tag-action {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .tag-update { background: #EBF8FF; color: #3182CE; }
+        .tag-sale { background: #E6FFFA; color: #319795; }
+        .tag-security { background: #FEFCBF; color: #D69E2E; }
+
+        @media (max-width: 850px) {
+            .container { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-nav">
+        <div class="header-brand">
+            <svg class="header-logo-svg" viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 60 70 C 20 70 15 25 55 25 C 75 25 85 35 90 42 L 72 50 C 68 44 62 39 52 39 C 32 39 34 56 52 56 C 63 56 70 51 76 45 L 88 56 C 79 65 70 70 60 70 Z" fill="#FFFFFF"/>
+                <path d="M 90 25 L 115 60 L 140 25 L 158 25 L 158 70 L 142 70 L 142 42 L 122 70 L 108 70 L 88 42 L 88 70 L 74 70 L 74 25 Z" fill="#FFFFFF"/>
+                <g fill="#F25C05">
+                    <path d="M 180 32 C 160 32 148 44 146 55 L 214 55 C 212 44 200 32 180 32 Z"/>
+                    <path d="M 142 56 L 218 56 C 221 56 223 58 223 60 C 223 62 221 64 218 64 L 142 64 C 139 64 137 62 137 60 C 137 58 139 56 142 56 Z"/>
+                </g>
+            </svg>
+            <span>SYSFERRETERÍA</span>
+        </div>
+
+        <nav class="header-menu">
+            <a href="sysferreter_a_sistema_principal.html" class="nav-item">Inicio / Inventario</a>
+            <a href="ventas.html" class="nav-item">Ventas (POS)</a>
+            <a href="nomina.html" class="nav-item">Nómina y Caja</a>
+            <a href="perfil de usuario.html" class="nav-item active">Perfil / Bitácora</a>
+            <a href="inicio_de_sesi_n_sysferreter_a.html" class="nav-item">Cerrar Sesión</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        
+        <aside class="profile-card">
+            <div class="avatar-container">
+                <div class="avatar" id="avatar-initials">JC</div>
+                <div class="status-badge" title="Estado: Activo"></div>
+            </div>
+            
+            <h2 class="user-name" id="sidebar-name">Jorge Armando Castañón</h2>
+            <span class="user-role" id="sidebar-role">Encargado</span>
+
+            <div class="info-list">
+                <div class="info-item">
+                    <span class="info-label">Usuario:</span>
+                    <span class="info-value" id="sidebar-user">@admin_cabrera</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Sucursal:</span>
+                    <span class="info-value">Ferretería Cabrera</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Base de Datos:</span>
+                    <span class="info-value">SQL Server Activo</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Estado:</span>
+                    <span class="info-value" style="color: #10B981;">En Línea</span>
+                </div>
+            </div>
+
+            <button class="btn-logout" onclick="localStorage.removeItem('sysferreteria_user'); window.location.href='inicio_de_sesi_n_sysferreter_a.html';">Cerrar Sesión</button>
+        </aside>
+
+        <main class="content-panel">
+            
+            <div class="panel-tabs">
+                <button class="tab-btn active" onclick="switchTab('actividad', this)">Bitácora de Movimientos</button>
+                <button class="tab-btn" onclick="switchTab('datos-personales', this)">Información Personal</button>
+                <button class="tab-btn" onclick="switchTab('seguridad', this)">Seguridad</button>
+            </div>
+
+            <!-- Tab 1: Bitácora en Vivo por Defecto -->
+            <div id="actividad" class="tab-content active">
+                <div style="overflow-x: auto;">
+                    <table class="activity-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha y Hora</th>
+                                <th>Acción y Detalle Auditado</th>
+                                <th>Módulo</th>
+                                <th>Etiqueta</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tab 2: Datos Personales -->
+            <div id="datos-personales" class="tab-content">
+                <form onsubmit="guardarPerfil(event)" style="display: flex; flex-direction: column;">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">Nombre Completo</label>
+                            <input type="text" id="prof-nombre" class="form-input" value="Jorge Armando Castañón" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Correo electrónico</label>
+                            <input type="email" id="prof-correo" class="form-input" value="admin@ferreteriacabrera.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Teléfono de contacto</label>
+                            <input type="tel" id="prof-telefono" class="form-input" value="+52 846 123 4567">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nombre de usuario</label>
+                            <input type="text" id="prof-username" class="form-input" value="admin_cabrera" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cargo / Rol Único</label>
+                            <select id="prof-rol" class="form-select">
+                                <option value="Encargado" selected>Encargado de la Ferretería</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-save">Guardar Cambios en SQL Server</button>
+                </form>
+            </div>
+
+            <!-- Tab 3: Seguridad -->
+            <div id="seguridad" class="tab-content">
+                <form onsubmit="cambiarPassword(event)" style="display: flex; flex-direction: column;">
+                    <div class="form-grid">
+                        <div class="form-group full-width">
+                            <label class="form-label">Contraseña Actual</label>
+                            <input type="password" id="pass-actual" class="form-input" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Nueva Contraseña</label>
+                            <input type="password" id="pass-nueva" class="form-input" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Confirmar Nueva Contraseña</label>
+                            <input type="password" id="pass-confirm" class="form-input" placeholder="••••••••" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-save">Actualizar Contraseña</button>
+                </form>
+            </div>
+
+        </main>
+    </div>
+
+    <script>
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            element.classList.add('active');
+        }
+
+        async function guardarPerfil(e) {
+            e.preventDefault();
+            const payload = {
+                nombre_usuario: document.getElementById('prof-username').value,
+                nombre_completo: document.getElementById('prof-nombre').value,
+                correo: document.getElementById('prof-correo').value,
+                telefono: document.getElementById('prof-telefono').value,
+                rol: document.getElementById('prof-rol').value
+            };
+
+            try {
+                const res = await fetch('http://localhost:3000/api/perfil', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                alert(data.mensaje);
+                if (data.ok) {
+                    document.getElementById('sidebar-name').textContent = payload.nombre_completo;
+                    localStorage.setItem('sysferreteria_user', JSON.stringify(payload));
+                    if (typeof inicializarBitacoraPerfil === 'function') inicializarBitacoraPerfil();
+                }
+            } catch (err) {
+                alert('Error al actualizar perfil: ' + err.message);
+            }
+        }
+
+        async function cambiarPassword(e) {
+            e.preventDefault();
+            const nueva = document.getElementById('pass-nueva').value;
+            const confirm = document.getElementById('pass-confirm').value;
+            if (nueva !== confirm) {
+                alert('Las contraseñas nuevas no coinciden.');
+                return;
+            }
+
+            try {
+                const res = await fetch('http://localhost:3000/api/perfil/password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        nombre_usuario: document.getElementById('prof-username').value,
+                        nueva_password: nueva
+                    })
+                });
+                const data = await res.json();
+                alert(data.mensaje);
+                if (data.ok) {
+                    e.target.reset();
+                    if (typeof inicializarBitacoraPerfil === 'function') inicializarBitacoraPerfil();
+                }
+            } catch (err) {
+                alert('Error al cambiar contraseña: ' + err.message);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const saved = localStorage.getItem('sysferreteria_user');
+            if (saved) {
+                try {
+                    const u = JSON.parse(saved);
+                    if (u.nombre_usuario) {
+                        document.getElementById('prof-username').value = u.nombre_usuario;
+                        document.getElementById('sidebar-user').textContent = '@' + u.nombre_usuario;
+                    }
+                    if (u.nombre_completo) {
+                        document.getElementById('prof-nombre').value = u.nombre_completo;
+                        document.getElementById('sidebar-name').textContent = u.nombre_completo;
+                        const parts = u.nombre_completo.trim().split(' ');
+                        document.getElementById('avatar-initials').textContent = (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+                    }
+                    if (u.correo) document.getElementById('prof-correo').value = u.correo;
+                    if (u.telefono) document.getElementById('prof-telefono').value = u.telefono;
+                } catch (_) {}
+            }
+        });
+    </script>
+    <script src="app-api.js"></script>
+</body>
+</html>

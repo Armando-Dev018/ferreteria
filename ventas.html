@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Ventas (POS) - SysFerretería</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #525D65;
+            min-height: 100vh;
+            color: #2D3748;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-nav {
+            background-color: #343A40;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            color: #FFFFFF;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+        }
+
+        .header-logo-svg {
+            height: 38px;
+            width: auto;
+        }
+
+        .header-menu {
+            display: flex;
+            gap: 8px;
+        }
+
+        .nav-item {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: #F25C05;
+            color: #FFFFFF;
+        }
+
+        .sales-container {
+            max-width: 1400px;
+            width: 96%;
+            margin: 20px auto;
+            display: grid;
+            grid-template-columns: 1fr 440px;
+            gap: 20px;
+            height: calc(100vh - 100px);
+        }
+
+        .catalog-panel {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .catalog-header {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .search-bar {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 42px;
+            padding: 0 14px 0 40px;
+            border-radius: 10px;
+            border: 1px solid #CBD5E0;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: #F25C05;
+            box-shadow: 0 0 0 3px rgba(242, 92, 5, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #A0AEC0;
+        }
+
+        .categories-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .cat-btn {
+            background: #F7FAFC;
+            border: 1px solid #E2E8F0;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4A5568;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .cat-btn.active, .cat-btn:hover {
+            background: #F25C05;
+            color: #FFFFFF;
+            border-color: #F25C05;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+            gap: 15px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .product-card {
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            border-color: #F25C05;
+        }
+
+        .prod-code {
+            font-size: 11px;
+            color: #A0AEC0;
+            font-weight: 700;
+            font-family: monospace;
+        }
+
+        .prod-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #2D3748;
+            margin: 4px 0 8px 0;
+            line-height: 1.3;
+        }
+
+        .prod-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .prod-price {
+            font-size: 15px;
+            font-weight: 800;
+            color: #F25C05;
+        }
+
+        .prod-stock {
+            font-size: 11px;
+            background: #EDF2F7;
+            padding: 2px 8px;
+            border-radius: 10px;
+            color: #4A5568;
+            font-weight: 600;
+        }
+
+        .ticket-panel {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .ticket-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1A202C;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-clear {
+            background: none;
+            border: none;
+            color: #E53E3E;
+            font-size: 12.5px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .ticket-list {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            border-top: 1px solid #E2E8F0;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .ticket-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 10px;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px dotted #E2E8F0;
+        }
+
+        .item-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: #2D3748;
+        }
+
+        .item-price-unit {
+            font-size: 11px;
+            color: #718096;
+        }
+
+        .item-qty-ctrl {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #F7FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            padding: 2px 6px;
+        }
+
+        .qty-btn {
+            background: none;
+            border: none;
+            color: #4A5568;
+            font-weight: 700;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .qty-val {
+            font-size: 13px;
+            font-weight: 700;
+            color: #2D3748;
+        }
+
+        .item-subtotal {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: #1A202C;
+            text-align: right;
+        }
+
+        .checkout-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13.5px;
+            color: #718096;
+        }
+
+        .summary-row.total {
+            font-size: 18px;
+            font-weight: 800;
+            color: #1A202C;
+            border-top: 2px solid #E2E8F0;
+            padding-top: 8px;
+        }
+
+        .summary-row.total span:last-child {
+            color: #F25C05;
+        }
+
+        .pay-field {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 5px;
+        }
+
+        .pay-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #4A5568;
+        }
+
+        .pay-select, .pay-input {
+            height: 38px;
+            padding: 0 10px;
+            border-radius: 8px;
+            border: 1px solid #CBD5E0;
+            font-size: 13.5px;
+            color: #2D3748;
+            outline: none;
+        }
+
+        .btn-complete-sale {
+            margin-top: 10px;
+            width: 100%;
+            height: 46px;
+            background: #F25C05;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(242, 92, 5, 0.3);
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        .btn-complete-sale:hover {
+            background: #D94E04;
+            transform: translateY(-1px);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-ticket {
+            background: #FFFFFF;
+            width: 380px;
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .ticket-header {
+            text-align: center;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #CBD5E0;
+            padding-bottom: 10px;
+            width: 100%;
+        }
+
+        .ticket-header h3 {
+            color: #F25C05;
+            font-size: 18px;
+        }
+
+        .ticket-body {
+            width: 100%;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+
+        .ticket-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .modal-btn {
+            background: #F25C05;
+            color: #FFFFFF;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-nav">
+        <div class="header-brand">
+            <svg class="header-logo-svg" viewBox="0 0 280 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 60 70 C 20 70 15 25 55 25 C 75 25 85 35 90 42 L 72 50 C 68 44 62 39 52 39 C 32 39 34 56 52 56 C 63 56 70 51 76 45 L 88 56 C 79 65 70 70 60 70 Z" fill="#FFFFFF"/>
+                <path d="M 90 25 L 115 60 L 140 25 L 158 25 L 158 70 L 142 70 L 142 42 L 122 70 L 108 70 L 88 42 L 88 70 L 74 70 L 74 25 Z" fill="#FFFFFF"/>
+                <g fill="#F25C05">
+                    <path d="M 180 32 C 160 32 148 44 146 55 L 214 55 C 212 44 200 32 180 32 Z"/>
+                    <path d="M 142 56 L 218 56 C 221 56 223 58 223 60 C 223 62 221 64 218 64 L 142 64 C 139 64 137 62 137 60 C 137 58 139 56 142 56 Z"/>
+                </g>
+            </svg>
+            <span>SYSFERRETERÍA</span>
+        </div>
+
+        <nav class="header-menu">
+            <a href="sysferreter_a_sistema_principal.html" class="nav-item">Inicio / Inventario</a>
+            <a href="ventas.html" class="nav-item active">Ventas (POS)</a>
+            <a href="nomina.html" class="nav-item">Nómina y Caja</a>
+            <a href="perfil de usuario.html" class="nav-item">Perfil / Bitácora</a>
+            <a href="inicio_de_sesi_n_sysferreter_a.html" class="nav-item">Cerrar Sesión</a>
+        </nav>
+    </header>
+
+    <div class="sales-container">
+
+        <!-- Panel Izquierdo: Catálogo conectado a SQL Server -->
+        <main class="catalog-panel">
+            <div class="catalog-header">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="search-input" class="search-input" placeholder="Buscar producto por nombre o código de barras (ej. CON-001, HER-001)..." oninput="filtrarProductos()">
+                </div>
+            </div>
+
+            <div class="categories-bar">
+                <button class="cat-btn active" onclick="filtrarCategoria('todas', this)">Todas</button>
+                <button class="cat-btn" onclick="filtrarCategoria('Construcción', this)">Construcción</button>
+                <button class="cat-btn" onclick="filtrarCategoria('Herramientas', this)">Herramientas</button>
+                <button class="cat-btn" onclick="filtrarCategoria('Electricidad', this)">Electricidad</button>
+                <button class="cat-btn" onclick="filtrarCategoria('Plomería y fontanería', this)">Plomería</button>
+                <button class="cat-btn" onclick="filtrarCategoria('Pinturas y Acabados', this)">Pinturas</button>
+                <button class="cat-btn" onclick="filtrarCategoria('Cerrajería y Herrajes', this)">Cerrajería</button>
+                <button class="cat-btn" onclick="filtrarCategoria('Seguridad industrial', this)">Seguridad</button>
+            </div>
+
+            <div id="products-grid" class="products-grid"></div>
+        </main>
+
+        <!-- Panel Derecho: Ticket y Cobro -->
+        <aside class="ticket-panel">
+            <div class="ticket-title">
+                <span>Ticket de Venta Actual</span>
+                <button class="btn-clear" onclick="vaciarTicket()">Vaciar Ticket</button>
+            </div>
+
+            <div id="ticket-list" class="ticket-list"></div>
+
+            <div class="checkout-box">
+                <div class="summary-row">
+                    <span>Subtotal (Sin IVA):</span>
+                    <span id="txt-subtotal">$0.00</span>
+                </div>
+                <div class="summary-row">
+                    <span>I.V.A. (Incluido 16%):</span>
+                    <span id="txt-iva">$0.00</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Total a Cobrar:</span>
+                    <span id="txt-total">$0.00</span>
+                </div>
+
+                <div class="pay-field">
+                    <label class="pay-label">Cliente:</label>
+                    <input type="text" id="client-name" class="pay-input" placeholder="Público en General">
+                </div>
+
+                <div class="pay-field">
+                    <label class="pay-label">Método de Pago:</label>
+                    <select id="pay-method" class="pay-select" onchange="toggleEfectivo()">
+                        <option value="efectivo">Efectivo</option>
+                        <option value="tarjeta">Tarjeta de Débito / Crédito</option>
+                        <option value="transferencia">Transferencia SPEI</option>
+                    </select>
+                </div>
+
+                <div id="box-efectivo" class="pay-field">
+                    <label class="pay-label">Efectivo Recibido ($):</label>
+                    <input type="number" id="pay-amount" class="pay-input" placeholder="0.00" min="0" step="0.50" oninput="calcularCambio()">
+                    <div class="summary-row" style="margin-top: 4px; font-weight: 700;">
+                        <span>Cambio a entregar:</span>
+                        <span id="txt-cambio" style="color: #10B981;">$0.00</span>
+                    </div>
+                </div>
+
+                <button class="btn-complete-sale" onclick="completarVenta()">Cobrar y Descontar Inventario</button>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Modal de Comprobante de Venta -->
+    <div id="modal-ticket" class="modal-overlay">
+        <div class="modal-ticket">
+            <div class="ticket-header">
+                <h3>FERRETERÍA CABRERA</h3>
+                <p style="font-size: 11px; color: #718096;">Comprobante Fiscal / Nota de Mostrador</p>
+                <p id="ticket-folio" style="font-size: 13px; font-weight: 800; margin-top: 4px; color:#2D3748;"></p>
+            </div>
+
+            <div class="ticket-body">
+                <div class="ticket-row"><span>Cliente:</span><strong id="ticket-client"></strong></div>
+                <div class="ticket-row"><span>Método:</span><strong id="ticket-method"></strong></div>
+                <hr style="margin: 8px 0; border: none; border-top: 1px dashed #CBD5E0;">
+                <div id="ticket-items-detail"></div>
+                <hr style="margin: 8px 0; border: none; border-top: 1px dashed #CBD5E0;">
+                <div class="ticket-row" style="font-size: 16px; font-weight: 800;"><span>TOTAL COBRADO:</span><span id="ticket-total-val" style="color: #F25C05;"></span></div>
+                <div class="ticket-row" style="font-size: 12px; color:#10B981; font-weight:700; margin-top:4px;"><span>Estado SQL:</span><span>Stock y CorteCaja actualizados</span></div>
+            </div>
+
+            <button class="modal-btn" onclick="cerrarModal()">Nueva Venta</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales en window para sincronización limpia con app-api.js
+        window.productos = [];
+        window.ticket = [];
+        let categoriaActual = 'todas';
+
+        window.renderProductos = function() {
+            const grid = document.getElementById('products-grid');
+            const busqueda = document.getElementById('search-input').value.toLowerCase();
+            grid.innerHTML = '';
+
+            window.productos.filter(p => {
+                const coincideCat = categoriaActual === 'todas' || p.cat.toLowerCase().includes(categoriaActual.toLowerCase());
+                const coincideTexto = p.nombre.toLowerCase().includes(busqueda) || p.codigo.toLowerCase().includes(busqueda);
+                return coincideCat && coincideTexto;
+            }).forEach(p => {
+                const sinStock = p.stock <= 0;
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                if (sinStock) card.style.opacity = '0.5';
+                card.onclick = () => agregarAlTicket(p.codigo);
+                card.innerHTML = `
+                    <div>
+                        <span class="prod-code">${p.codigo}</span>
+                        <h4 class="prod-title">${p.nombre}</h4>
+                    </div>
+                    <div class="prod-footer">
+                        <span class="prod-price">$${p.precio.toFixed(2)}</span>
+                        <span class="prod-stock" style="${p.stock <= (p.stock_minimo || 5) ? 'background:#FED7D7;color:#C53030;' : ''}">Stock: ${p.stock}</span>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        };
+
+        function agregarAlTicket(codigo) {
+            const prod = window.productos.find(p => p.codigo === codigo);
+            if (!prod) return;
+            if (prod.stock <= 0) {
+                alert('Este producto está agotado en inventario.');
+                return;
+            }
+
+            const item = window.ticket.find(i => i.codigo === codigo);
+            if (item) {
+                if (item.cantidad < prod.stock) {
+                    item.cantidad++;
+                } else {
+                    alert(`Stock máximo disponible alcanzado (${prod.stock} unidades).`);
+                }
+            } else {
+                window.ticket.push({ ...prod, cantidad: 1 });
+            }
+            renderTicket();
+        }
+
+        function cambiarCant(codigo, delta) {
+            const prod = window.productos.find(p => p.codigo === codigo);
+            const item = window.ticket.find(i => i.codigo === codigo);
+            if (!item) return;
+
+            if (delta > 0 && prod && item.cantidad >= prod.stock) {
+                alert(`Solo hay ${prod.stock} unidades disponibles en bodega.`);
+                return;
+            }
+
+            item.cantidad += delta;
+            if (item.cantidad <= 0) {
+                window.ticket = window.ticket.filter(i => i.codigo !== codigo);
+            }
+            renderTicket();
+        }
+
+        function renderTicket() {
+            const list = document.getElementById('ticket-list');
+            list.innerHTML = '';
+
+            let total = 0;
+
+            window.ticket.forEach(item => {
+                const itemSub = item.precio * item.cantidad;
+                total += itemSub;
+
+                const row = document.createElement('div');
+                row.className = 'ticket-item';
+                row.innerHTML = `
+                    <div class="item-info">
+                        <span class="item-name">${item.nombre}</span>
+                        <span class="item-price-unit">${item.codigo} • $${item.precio.toFixed(2)} c/u</span>
+                    </div>
+                    <div class="item-qty-ctrl">
+                        <button class="qty-btn" onclick="cambiarCant('${item.codigo}', -1)">-</button>
+                        <span class="qty-val">${item.cantidad}</span>
+                        <button class="qty-btn" onclick="cambiarCant('${item.codigo}', 1)">+</button>
+                    </div>
+                    <span class="item-subtotal">$${itemSub.toFixed(2)}</span>
+                `;
+                list.appendChild(row);
+            });
+
+            // El precio de venta ya es el precio final que cobra sp_ProcesarVentaUnitaria
+            const subtotalSinIva = total / 1.16;
+            const iva = total - subtotalSinIva;
+
+            document.getElementById('txt-subtotal').innerText = `$${subtotalSinIva.toFixed(2)}`;
+            document.getElementById('txt-iva').innerText = `$${iva.toFixed(2)}`;
+            document.getElementById('txt-total').innerText = `$${total.toFixed(2)}`;
+
+            calcularCambio();
+        }
+
+        function vaciarTicket() {
+            window.ticket = [];
+            renderTicket();
+        }
+
+        function filtrarCategoria(cat, btn) {
+            categoriaActual = cat;
+            document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            window.renderProductos();
+        }
+
+        function filtrarProductos() {
+            window.renderProductos();
+        }
+
+        function calcularCambio() {
+            const total = parseFloat(document.getElementById('txt-total').innerText.replace('$', '')) || 0;
+            const paga = parseFloat(document.getElementById('pay-amount').value) || 0;
+            const cambio = paga - total;
+            document.getElementById('txt-cambio').innerText = `$${cambio > 0 ? cambio.toFixed(2) : '0.00'}`;
+        }
+
+        function toggleEfectivo() {
+            const metodo = document.getElementById('pay-method').value;
+            document.getElementById('box-efectivo').style.display = metodo === 'efectivo' ? 'flex' : 'none';
+        }
+
+        window.completarVenta = async function() {
+            if (!window.ticket || window.ticket.length === 0) {
+                alert('El ticket está vacío. Selecciona al menos un producto del catálogo.');
+                return;
+            }
+
+            const total = parseFloat(document.getElementById('txt-total').innerText.replace('$', '')) || 0;
+            const metodo = document.getElementById('pay-method').value;
+            const montoInput = parseFloat(document.getElementById('pay-amount').value) || 0;
+            const paga = metodo === 'efectivo' ? montoInput : total;
+
+            if (metodo === 'efectivo' && paga < total) {
+                alert(`El efectivo recibido ($${paga.toFixed(2)}) es menor al total a cobrar ($${total.toFixed(2)}).`);
+                return;
+            }
+
+            const cliente = document.getElementById('client-name').value.trim() || 'Público en General';
+
+            try {
+                const resp = await fetch('http://localhost:3000/api/ventas', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_usuario: 1,
+                        id_corte: 1,
+                        cliente: cliente,
+                        metodo_pago: metodo,
+                        items: window.ticket.map(i => ({ codigo: i.codigo, cantidad: i.cantidad })),
+                        efectivo_recibido: paga
+                    })
+                });
+
+                const resultado = await resp.json();
+                if (!resp.ok || !resultado.ok) {
+                    alert('Error desde SQL Server: ' + resultado.mensaje);
+                    return;
+                }
+
+                document.getElementById('ticket-folio').innerText = 'Folio: #' + resultado.folio;
+                document.getElementById('ticket-client').innerText = cliente;
+                document.getElementById('ticket-method').innerText = metodo.toUpperCase();
+                document.getElementById('ticket-total-val').innerText = `$${total.toFixed(2)}`;
+
+                const detailBox = document.getElementById('ticket-items-detail');
+                detailBox.innerHTML = '';
+                window.ticket.forEach(i => {
+                    detailBox.innerHTML += `<div class="ticket-row"><span>${i.cantidad}x ${i.nombre}</span><span>$${(i.precio * i.cantidad).toFixed(2)}</span></div>`;
+                });
+
+                document.getElementById('modal-ticket').classList.add('active');
+                if (typeof inicializarModuloVentas === 'function') {
+                    await inicializarModuloVentas();
+                }
+            } catch (err) {
+                alert('Error de conexión con el servidor: ' + err.message);
+            }
+        };
+
+        function cerrarModal() {
+            document.getElementById('modal-ticket').classList.remove('active');
+            vaciarTicket();
+            document.getElementById('pay-amount').value = '';
+            document.getElementById('client-name').value = '';
+        }
+    </script>
+    <script src="app-api.js"></script>
+</body>
+</html>
